@@ -1,6 +1,6 @@
 import * as React from "react";
 import Header from "./Header";
-import TextInsertion from "./TextInsertion";
+import AttachmentProcess from "./AttachmentProcess";
 import { makeStyles } from "@fluentui/react-components";
 import { insertText } from "../taskpane";
 
@@ -22,7 +22,7 @@ const App: React.FC<AppProps> = (props: AppProps) => {
   return (
     <div className={styles.root}>
       <Header logo="assets/logo-filled.png" title={props.title} message="Welcome to SmartDoc Assist" />
-      <TextInsertion insertText={insertText} />
+      <AttachmentProcess insertText={insertText} />
     </div>
   );
 };
