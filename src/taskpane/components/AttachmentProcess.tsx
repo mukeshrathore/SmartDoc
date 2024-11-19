@@ -13,7 +13,14 @@ interface Attachment {
   name: string;
   // content: string;
 }
-
+interface metadata {
+  sender: string;
+  to: string;
+  subject: string;
+  conversationId: string;
+  itemId: string;
+  timeStamp: string;
+}
 
 const useStyles = makeStyles({
   instructions: {
@@ -82,11 +89,28 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
   const [isAttachmentFetched, setIsAttachmentFetched] = useState<boolean | null>(null);
 
   const [isSubmissionInitiated, setIsSubmissionInitiated] = useState<boolean>(false);
+  const [metaData, setMetaData] = useState(null);
+
+  const getMetadata = async () => {
+    // Simulate a call to get metadata
+    setMetaData({
+      sender: Office.context.mailbox.item.sender.emailAddress.toString(),
+      to: Office.context.mailbox.item.to[0].emailAddress.toString(),
+      subject: Office.context.mailbox.item.subject.toString(),
+      conversationId: Office.context.mailbox.item.conversationId.toString(),
+      itemId: Office.context.mailbox.item.itemId.toString(),
+      timeStamp: Office.context.mailbox.item.dateTimeCreated.getTime().toString()
+    });
+  };
 
   const fetchAttachments = async () => {
-
     try {
       const names: Attachment[] = [];
+
+      // call a function to get metadata      
+      getMetadata();
+
+      // fetching attachments names from email
       Office.context.mailbox.item.attachments.forEach(async (attachment) => {
         names.push({
           id: attachment.id,
@@ -138,10 +162,26 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
           }
         });
       });
+
+      // download metadata
+      downloadMetaData(metaData);
+
     } catch (error) {
       console.error("Error fetching attachments", error);
     }
   };
+
+  const downloadMetaData = (metaData: any) => {
+    const jsonString = JSON.stringify(metaData); // Formatted JSON
+    const blob = new Blob([jsonString], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'metadata.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   const styles = useStyles();
 
@@ -167,12 +207,12 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
       {attachments.length > 0 && !isSubmissionInitiated && (
         <>
           <strong style={{ marginLeft: '40px', width: '100%', display: 'block' }}>MetaData:</strong>
-          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Sender:</strong> {Office.context.mailbox.item.sender.emailAddress}</span>
-          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>To:</strong> {Office.context.mailbox.item.to[0].emailAddress}</span>
-          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Subject:</strong> {Office.context.mailbox.item.subject}</span>
-          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>ConversationId:</strong> {Office.context.mailbox.item.conversationId}</span>
-          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>ItemId:</strong> {Office.context.mailbox.item.itemId}</span>
-          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Received TimeStamp:</strong> {Office.context.mailbox.item.dateTimeCreated.getTime().toString()}</span>
+          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Sender:</strong> {metaData?.sender}</span>
+          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>To:</strong> {metaData?.to}</span>
+          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Subject:</strong> {metaData?.subject}</span>
+          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>ConversationId:</strong> {metaData?.conversationId}</span>
+          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>ItemId:</strong> {metaData?.itemId}</span>
+          <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Received TimeStamp:</strong> {metaData?.timeStamp}</span>
 
           <h4 style={{ margin: 0, marginTop: '10px', marginLeft: '40px', width: '100%', display: 'block' }}>Attachments:</h4>
           <ul style={{ marginTop: 0 }}>
@@ -202,3 +242,5 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
 };
 
 export default TextInsertion;
+
+
