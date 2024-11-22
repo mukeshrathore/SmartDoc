@@ -197,7 +197,7 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
 
       {attachments.length > 0 && !isSubmissionInitiated && (
         <>
-          <strong style={{ marginLeft: '40px', width: '100%', display: 'block' }}>MetaData:</strong>
+          <strong style={{ marginLeft: '40px', marginTop: '10px', width: '100%', display: 'block' }}>MetaData:</strong>
           <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Sender:</strong> {metaData?.sender}</span>
           <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>To:</strong> {metaData?.to}</span>
           <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Subject:</strong> {metaData?.subject}</span>
@@ -205,7 +205,8 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
           <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>ItemId:</strong> {metaData?.itemId}</span>
           <span style={{ marginLeft: '40px', width: '100%', display: 'block' }}> <strong>Received TimeStamp:</strong> {metaData?.timeStamp}</span>
 
-          <h4 style={{ margin: 0, marginTop: '10px', marginLeft: '40px', width: '100%', display: 'block' }}>Attachments:</h4>
+          {/* <h4 style={{ margin: 0, marginTop: '10px', marginLeft: '40px', width: '100%', display: 'block' }}>Attachments:</h4> */}
+          <strong style={{ marginLeft: '40px', width: '100%', display: 'block' }}>Attachments:</strong>
           <ul style={{ marginTop: 0 }}>
             {attachments.map((attachment) => (
               <li key={attachment.id}>{attachment.name}</li>
