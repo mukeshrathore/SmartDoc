@@ -11,9 +11,9 @@ interface processEmailDataProps {
 interface Attachment {
   id: string;
   name: string;
-  // content: string;
 }
-interface metadata {
+
+interface Metadata {
   sender: string;
   to: string;
   subject: string;
@@ -34,22 +34,7 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-  },
-  textAreaField: {
-    marginLeft: "20px",
-    marginTop: "30px",
-    marginBottom: "20px",
-    marginRight: "20px",
-    maxWidth: "50%",
-  },
-  attachmentList: {
-    marginTop: "20px",
-    listStyleType: "none",
-    padding: 0,
-  },
-  attachmentItem: {
-    marginBottom: "10px",
-  },
+  }
 });
 
 /**
@@ -85,12 +70,13 @@ const useStyles = makeStyles({
  * - Office JavaScript API
  */
 const processEmailData: React.FC<processEmailDataProps> = () => {
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [isConsent, setIsConsent] = useState<boolean>(false);
+
+  const [metaData, setMetaData] = useState<Metadata>(null);
   const [isAttachmentFetched, setIsAttachmentFetched] = useState<boolean | null>(null);
 
   const [isSubmissionInitiated, setIsSubmissionInitiated] = useState<boolean>(false);
-  const [isConsent, setIsConsent] = useState<boolean>(false);
-  const [metaData, setMetaData] = useState(null);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   // call a function to get metadata
   const getMetadata = async () => {
@@ -124,6 +110,18 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
       console.error('Error fetching attachments:', error);
     }
   };
+
+  const downloadMetaData = (metaData: any) => {
+    const jsonString = JSON.stringify(metaData); // Formatted JSON
+    const blob = new Blob([jsonString], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'metadata.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   const downloadAttachments = async () => {
     try {
@@ -170,17 +168,9 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
     }
   };
 
-  const downloadMetaData = (metaData: any) => {
-    const jsonString = JSON.stringify(metaData); // Formatted JSON
-    const blob = new Blob([jsonString], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'metadata.txt';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+  const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.checked ? setIsConsent(true) : setIsConsent(false);
+  };
 
   const styles = useStyles();
 
@@ -188,18 +178,11 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
     <div className={styles.textPromptAndInsertion}>
       {attachments.length === 0 && (
         <>
-          <label>
-            <input
-              type="checkbox"
-              onChange={(e) => setIsConsent(e.target.checked)}
-            />
+          <label style={{ marginTop: '10px' }}>
+            <input type="checkbox" onChange={handleConsentChange} />
             I consent to extract MetaData from this email.
           </label>
-          {/* <Field className={styles.instructions}>
-            Please provide your consent by clicking below button to extract MetaData from respective email.
-          </Field> */}
-          isConsent:{isConsent}
-          <Button appearance="primary" disabled={!isConsent && attachments.length > 0} size="medium" onClick={getMetadata}>
+          <Button appearance="primary" disabled={!isConsent} size="medium" onClick={getMetadata}>
             Proceed
           </Button>
         </>
