@@ -91,6 +91,7 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
   const [isSubmissionInitiated, setIsSubmissionInitiated] = useState<boolean>(false);
   const [metaData, setMetaData] = useState(null);
 
+  // call a function to get metadata
   const getMetadata = async () => {
     // Simulate a call to get metadata
     setMetaData({
@@ -101,15 +102,12 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
       itemId: Office.context.mailbox.item.itemId.toString(),
       timeStamp: Office.context.mailbox.item.dateTimeCreated.getTime().toString()
     });
+    fetchAttachmentMetadata();
   };
 
-  const fetchAttachments = async () => {
+  const fetchAttachmentMetadata = async () => {
     try {
       const names: Attachment[] = [];
-
-      // call a function to get metadata      
-      getMetadata();
-
       // fetching attachments names from email
       Office.context.mailbox.item.attachments.forEach(async (attachment) => {
         names.push({
@@ -190,10 +188,17 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
       {attachments.length === 0 && (
         <>
           <Field className={styles.instructions}>
+            {/* <label>
+              <input
+                type="checkbox"
+                onChange={(e) => setIsSubmissionInitiated(e.target.checked)}
+              />
+              I consent to extract MetaData from this email.
+            </label> */}
             Please provide your consent by clicking below button to extract MetaData from respective email.
           </Field>
-          <Button appearance="primary" disabled={attachments.length > 0} size="medium" onClick={fetchAttachments}>
-            Fetch MetaData
+          <Button appearance="primary" disabled={attachments.length > 0} size="medium" onClick={getMetadata}>
+            Proceed
           </Button>
         </>
       )}
