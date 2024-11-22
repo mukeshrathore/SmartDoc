@@ -78,6 +78,11 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
   const [isSubmissionInitiated, setIsSubmissionInitiated] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
+
+  const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.checked ? setIsConsent(true) : setIsConsent(false);
+  };
+
   // call a function to get metadata
   const getMetadata = async () => {
     // Simulate a call to get metadata
@@ -89,10 +94,10 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
       itemId: Office.context.mailbox.item.itemId.toString(),
       timeStamp: Office.context.mailbox.item.dateTimeCreated.getTime().toString()
     });
-    fetchAttachmentMetadata();
+    getAttachmentMetadata();
   };
 
-  const fetchAttachmentMetadata = async () => {
+  const getAttachmentMetadata = async () => {
     try {
       const names: Attachment[] = [];
       // fetching attachments names from email
@@ -168,10 +173,6 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
     }
   };
 
-  const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.target.checked ? setIsConsent(true) : setIsConsent(false);
-  };
-
   const styles = useStyles();
 
   return (
@@ -180,7 +181,7 @@ const processEmailData: React.FC<processEmailDataProps> = () => {
         <>
           <label style={{ marginTop: '10px' }}>
             <input type="checkbox" onChange={handleConsentChange} />
-            I consent to extract MetaData from this email.
+            I consent to extract MetaData from this email
           </label>
           <Button appearance="primary" disabled={!isConsent} size="medium" onClick={getMetadata}>
             Proceed
