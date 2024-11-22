@@ -4,7 +4,7 @@ import { Button, Field, tokens, makeStyles } from "@fluentui/react-components";
 
 /* global HTMLTextAreaElement */
 
-interface TextInsertionProps {
+interface processEmailDataProps {
   insertText: (text: string) => void;
 }
 
@@ -53,15 +53,15 @@ const useStyles = makeStyles({
 });
 
 /**
- * TextInsertion component is a React functional component that handles the fetching and downloading of email attachments.
+ * processEmailData component is a React functional component that handles the fetching and downloading of email attachments.
  * 
  * @component
- * @param {TextInsertionProps} props - The props for the TextInsertion component.
+ * @param {processEmailDataProps} props - The props for the processEmailData component.
  * 
  * @returns {JSX.Element} The rendered component.
  * 
  * @example
- * <TextInsertion />
+ * <processEmailData />
  * 
  * @remarks
  * This component uses the Office JavaScript API to interact with email attachments in Outlook.
@@ -84,11 +84,12 @@ const useStyles = makeStyles({
  * - React
  * - Office JavaScript API
  */
-const TextInsertion: React.FC<TextInsertionProps> = () => {
+const processEmailData: React.FC<processEmailDataProps> = () => {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isAttachmentFetched, setIsAttachmentFetched] = useState<boolean | null>(null);
 
   const [isSubmissionInitiated, setIsSubmissionInitiated] = useState<boolean>(false);
+  const [isConsent, setIsConsent] = useState<boolean>(false);
   const [metaData, setMetaData] = useState(null);
 
   // call a function to get metadata
@@ -187,17 +188,18 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
     <div className={styles.textPromptAndInsertion}>
       {attachments.length === 0 && (
         <>
-          <Field className={styles.instructions}>
-            {/* <label>
-              <input
-                type="checkbox"
-                onChange={(e) => setIsSubmissionInitiated(e.target.checked)}
-              />
-              I consent to extract MetaData from this email.
-            </label> */}
+          <label>
+            <input
+              type="checkbox"
+              onChange={(e) => setIsConsent(e.target.checked)}
+            />
+            I consent to extract MetaData from this email.
+          </label>
+          {/* <Field className={styles.instructions}>
             Please provide your consent by clicking below button to extract MetaData from respective email.
-          </Field>
-          <Button appearance="primary" disabled={attachments.length > 0} size="medium" onClick={getMetadata}>
+          </Field> */}
+          isConsent:{isConsent}
+          <Button appearance="primary" disabled={!isConsent && attachments.length > 0} size="medium" onClick={getMetadata}>
             Proceed
           </Button>
         </>
@@ -246,6 +248,6 @@ const TextInsertion: React.FC<TextInsertionProps> = () => {
   );
 };
 
-export default TextInsertion;
+export default processEmailData;
 
 
